@@ -1,0 +1,50 @@
+
+.loginBox {
+    font-family: "Titillium Web", sans-serif;
+    border: 3px;
+    border-width: 0.3rem;
+    border-style: dashed;
+    border-color: black;
+    border-radius: 25px;
+    margin: 20rem;
+    display: block;
+    border-spacing: 0;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 4rem;
+    margin-left: 40rem;
+    margin-right: 40rem;
+}
+.loginBox h1{
+    text-align: center;
+    margin: 0%;
+}
+#usernameBox{
+    text-align: center;
+    align-items: center;
+    margin: auto;
+    display: block;
+}
+#passwordBox{
+    text-align: center;
+    align-items: center;
+    margin: auto;
+    display: block;
+    margin-top: 0.1%;
+}
+.loginBox h2{
+    
+    cursor: pointer;
+    margin-top: 0;
+    font-size: 0.7rem;
+    margin-bottom: 0;
+}
+.loginBox h3{
+    cursor: pointer;
+    margin-top: 0;
+    font-size: 0.7rem;
+    margin-bottom: 0;
+}
+.loginButton{
+    margin-top: 0;
+}
