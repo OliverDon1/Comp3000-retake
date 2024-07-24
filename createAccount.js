@@ -3,17 +3,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let userName = document.getElementById("inputUsername");
     let Pword = document.getElementById("inputPassword");
     let sAnswer = document.getElementById("inputsAnswer");
-
-    const socket = io(); // Initialize Socket.IO client
-
+    let returnButton = document.getElementById("Back");
+    const socket = io(); 
+    returnButton.addEventListener("click",changePageLogin);
     createAccountButton.addEventListener("click", createAccount);
-
     function createAccount() {
         let newuname = userName.value;
         let newPword = Pword.value;
         let newsAnswer = sAnswer.value;
         console.log("Sending account data");
-
         async function saveNewAccount() {
             try {
                 socket.emit('accountNew', { newuname, newPword, newsAnswer });
@@ -22,7 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error creating account:", error);
             }
         }
-
         saveNewAccount();
+        window.location.href = "/login.html";
+    }
+    function changePageLogin(){
+        window.location.href = "/login.html";
     }
 });
