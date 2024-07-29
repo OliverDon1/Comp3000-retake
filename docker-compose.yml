@@ -1,0 +1,26 @@
+version: '3'
+services:
+  python-server:
+    build:
+      context: ./python-app
+      dockerfile: Dockerfile.python-server
+    ports:
+      - "5000:5000"
+    networks:
+      - backend
+    depends_on:
+      - js-server
+
+  js-server:
+    build:
+      context: ./js-app
+      dockerfile: Dockerfile.js-server
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+  backend:
