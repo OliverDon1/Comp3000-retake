@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
+import numpy as np
 import pandas as pd
+from collections import defaultdict
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
@@ -10,20 +11,55 @@ data = pd.read_csv('Training.csv')  # Update path as necessary
 X = data.drop(columns=['prognosis'])
 y = data['prognosis']
 
-# Initialize and fit the scaler
+# Standardize the data
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Initialize and fit the KMeans model
+# Custom KMeans implementation
+class CustomKMeans:
+    def __init__(self, n_clusters, max_iter=300, tol=1e-4):
+        self.n_clusters = n_clusters
+        self.max_iter = max_iter
+        self.tol = tol
+        self.centroids = None
+
+    def fit(self, X):
+        np.random.seed(0)
+        # Initialize centroids randomly from the data points
+        initial_indices = np.random.choice(len(X), self.n_clusters, replace=False)
+        self.centroids = X[initial_indices]
+
+        for i in range(self.max_iter):
+            # Assign clusters based on the closest centroid
+            clusters = self._assign_clusters(X)
+            # Calculate new centroids
+            new_centroids = np.array([X[clusters == k].mean(axis=0) for k in range(self.n_clusters)])
+
+            # Check for convergence
+            if np.linalg.norm(self.centroids - new_centroids) < self.tol:
+                break
+            self.centroids = new_centroids
+
+    def _assign_clusters(self, X):
+        distances = np.linalg.norm(X[:, np.newaxis] - self.centroids, axis=2)
+        return np.argmin(distances, axis=1)
+
+    def predict(self, X):
+        clusters = self._assign_clusters(X)
+        return clusters
+
 n_clusters = len(y.unique())
-kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+kmeans = CustomKMeans(n_clusters=n_clusters)
 kmeans.fit(X_scaled)
 
 # Create a mapping from clusters to prognosis
-cluster_prognosis_mapping = {}
-for cluster, prognosis in zip(kmeans.labels_, y):
-    if cluster not in cluster_prognosis_mapping:
-        cluster_prognosis_mapping[cluster] = prognosis
+cluster_prognosis_mapping = defaultdict(list)
+for cluster, prognosis in zip(kmeans.predict(X_scaled), y):
+    cluster_prognosis_mapping[cluster].append(prognosis)
+
+# Use the most frequent prognosis in each cluster
+for cluster in cluster_prognosis_mapping:
+    cluster_prognosis_mapping[cluster] = max(set(cluster_prognosis_mapping[cluster]), key=cluster_prognosis_mapping[cluster].count)
 
 @app.route('/submitSymptoms', methods=['POST'])
 def submit_symptoms():
