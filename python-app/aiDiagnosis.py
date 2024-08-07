@@ -6,16 +6,16 @@ from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
-# Load training data
-data = pd.read_csv('Training.csv')  # Update path as necessary
+# Load data
+data = pd.read_csv('Training.csv')
 X = data.drop(columns=['prognosis'])
 y = data['prognosis']
 
-# Standardize the data
+# Scale data
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Custom KMeans implementation
+# Custom K-means clustering algorithm
 class CustomKMeans:
     def __init__(self, n_clusters, max_iter=300, tol=1e-4):
         self.n_clusters = n_clusters
@@ -25,17 +25,20 @@ class CustomKMeans:
 
     def fit(self, X):
         np.random.seed(0)
-        # Initialize centroids randomly from the data points
         initial_indices = np.random.choice(len(X), self.n_clusters, replace=False)
         self.centroids = X[initial_indices]
 
         for i in range(self.max_iter):
-            # Assign clusters based on the closest centroid
             clusters = self._assign_clusters(X)
-            # Calculate new centroids
-            new_centroids = np.array([X[clusters == k].mean(axis=0) for k in range(self.n_clusters)])
-
-            # Check for convergence
+            new_centroids = []
+            for k in range(self.n_clusters):
+                cluster_points = X[clusters == k]
+                if len(cluster_points) > 0:
+                    new_centroids.append(cluster_points.mean(axis=0))
+                else:
+                    # Reinitialize empty cluster centroid
+                    new_centroids.append(X[np.random.choice(len(X))])
+            new_centroids = np.array(new_centroids)
             if np.linalg.norm(self.centroids - new_centroids) < self.tol:
                 break
             self.centroids = new_centroids
@@ -48,29 +51,36 @@ class CustomKMeans:
         clusters = self._assign_clusters(X)
         return clusters
 
-n_clusters = len(y.unique())
-kmeans = CustomKMeans(n_clusters=n_clusters)
-kmeans.fit(X_scaled)
-
-# Create a mapping from clusters to prognosis
-cluster_prognosis_mapping = defaultdict(list)
-for cluster, prognosis in zip(kmeans.predict(X_scaled), y):
-    cluster_prognosis_mapping[cluster].append(prognosis)
-
-# Use the most frequent prognosis in each cluster
-for cluster in cluster_prognosis_mapping:
-    cluster_prognosis_mapping[cluster] = max(set(cluster_prognosis_mapping[cluster]), key=cluster_prognosis_mapping[cluster].count)
-
 @app.route('/submitSymptoms', methods=['POST'])
 def submit_symptoms():
     data = request.json
     symptoms = data.get('symptoms', [])
     if len(symptoms) != X.shape[1]:
         return jsonify({"error": f"Invalid input length. Expected {X.shape[1]} features, got {len(symptoms)}."}), 400
+
     try:
-        newDataScaled = scaler.transform([symptoms])
-        cluster = kmeans.predict(newDataScaled)[0]
+        # Retrain the custom K-means model
+        n_clusters = len(y.unique())
+        kmeans = CustomKMeans(n_clusters=n_clusters)
+        kmeans.fit(X_scaled)
+        
+        # Map clusters to the most common prognosis in each cluster
+        cluster_prognosis_mapping = defaultdict(list)
+        for cluster, prognosis in zip(kmeans.predict(X_scaled), y):
+            cluster_prognosis_mapping[cluster].append(prognosis)
+        for cluster in cluster_prognosis_mapping:
+            cluster_prognosis_mapping[cluster] = max(set(cluster_prognosis_mapping[cluster]), key=cluster_prognosis_mapping[cluster].count)
+        
+        new_data_scaled = scaler.transform([symptoms])
+        cluster = kmeans.predict(new_data_scaled)[0]
         prognosis = cluster_prognosis_mapping.get(cluster, "Unknown")
+        
+        # Debugging information
+        print(f"Symptoms: {symptoms}")
+        print(f"Scaled Symptoms: {new_data_scaled}")
+        print(f"Predicted Cluster: {cluster}")
+        print(f"Prognosis: {prognosis}")
+        
         return jsonify({"diagnosis_cluster": int(cluster), "prognosis": prognosis})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

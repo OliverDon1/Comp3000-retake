@@ -6,12 +6,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     let qBoxInput = document.getElementById("sQueBox");
     let nPBox = document.getElementById("nPassBox");
     try {
-        const responseBooks = await fetch('/getAccounts');
-        if (!responseBooks.ok) {
-            throw new Error(`HTTP error! Status: ${responseBooks.status}`);
-        }
-        accountData = await responseBooks.json();
-        
         const responseAccounts = await fetch('/getAccounts');
         if (!responseAccounts.ok) {
             throw new Error(`HTTP error! Status: ${responseAccounts.status}`);

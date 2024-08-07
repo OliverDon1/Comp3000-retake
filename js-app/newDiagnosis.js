@@ -2,6 +2,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     let container = document.getElementById("newDiagnosis");
     let newDiagnosisButton = document.getElementById("Calculate");
     let chosenDiagnosis = document.getElementById("cDiagnosis");
+    let goBack = document.getElementById("Back");
+    let saveDiagnosisButton = document.getElementById("Save");
+    let loggedInUsers = undefined;
+    let accountData = undefined;
+    let newDiagnosis = undefined;
+
+    goBack.addEventListener("click", returnToMainPage);
+    saveDiagnosisButton.addEventListener("click", saveDiagnosis);
+
     const symptoms = [
         "Itching", "Skin Rash", "Nodal Skin Eruptions", "Continuous Sneezing", "Shivering",
         "Chills", "Joint Pain", "Stomach Pain", "Acidity", "Ulcers on Tongue", "Muscle Wasting",
@@ -33,7 +42,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Skin Peeling", "Silver Like Dusting", "Small Dents in Nails", "Inflammatory Nails",
         "Blister", "Red Sore Around Nose", "Yellow Crust Ooze"
     ];
-    let newsymptons = Array(symptoms.length).fill(0);
+
+    let newsymptoms = Array(symptoms.length).fill(0);
+
     symptoms.forEach(symptom => {
         let element = document.createElement("div");
         element.className = "symptom";
@@ -43,48 +54,105 @@ document.addEventListener("DOMContentLoaded", async function () {
         element.addEventListener("click", symptomChange);
     });
 
+    function returnToMainPage() {
+        window.location.href = "/mainPage.html";
+    }
+
     function symptomChange(event) {
-       
-        for(let x = 0; x <symptoms.length;x++){
-            if(event.currentTarget.id == symptoms[x]){
-                if(newsymptons[x] === 0){
-                    newsymptons[x] = 1;
-                } 
-                else{
-                    newsymptons[x] = 0;
-                }
-                console.log(newsymptons);
+        for (let x = 0; x < symptoms.length; x++) {
+            if (event.currentTarget.id == symptoms[x]) {
+                newsymptoms[x] = newsymptoms[x] === 0 ? 1 : 0;
                 break;
             }
         }
-        if (event.currentTarget.style.color != 'green') {
-            event.currentTarget.style.color = 'green';
-        } else {
-            event.currentTarget.style.color = 'black';
-        }
-        
+        event.currentTarget.style.color = event.currentTarget.style.color != 'green' ? 'green' : 'black';
     }
+
     async function sendSymptoms() {
         try {
+            console.log('Sending symptoms:', newsymptoms);
             const response = await fetch('/submitSymptoms', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ symptoms: newsymptons })
+                body: JSON.stringify({ symptoms: newsymptoms })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status}`);
             }
-    
-            // Try parsing the response as JSON
             const data = await response.json();
-            console.log('Parsed JSON response:', data);
+            console.log('Received data:', data);
+            newDiagnosis = data.prognosis;
             chosenDiagnosis.textContent = `Diagnosis: ${data.prognosis}`;
         } catch (error) {
             console.error('Error:', error);
         }
     }
-    newDiagnosisButton.addEventListener("click", sendSymptoms);    
+
+    async function fetchLoggedInUsers() {
+        try {
+            const response = await fetch('/loggedInUsers');
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            loggedInUsers = await response.json();
+            console.log('Logged-in users:', loggedInUsers);
+        } catch (error) {
+            console.error('Error fetching logged-in users:', error);
+        }
+    }
+
+    async function getAllUserData() {
+        try {
+            const responseAccounts = await fetch('/getAccounts');
+            if (!responseAccounts.ok) {
+                throw new Error(`HTTP error! Status: ${responseAccounts.status}`);
+            }
+            accountData = await responseAccounts.json();
+            console.log('Account data:', accountData);
+        } catch (error) {
+            console.error('Error fetching account data:', error);
+        }
+    }
+
+    async function saveDiagnosis() {
+        await fetchLoggedInUsers();
+        await getAllUserData();
+
+        const username = loggedInUsers[0]; // Assuming only one user is logged in at a time
+        const userAccount = accountData.find(account => account.username === username);
+
+        if (userAccount) {
+            userAccount.PD.push(newDiagnosis); // Assuming PD is an array
+
+            try {
+                const response = await fetch("/accountChange", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: userAccount.username,
+                        password: userAccount.password,
+                        sQuestion: userAccount.sQuestion,
+                        PD: userAccount.PD,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Account updated successfully:', data);
+            } catch (error) {
+                console.error('Error updating account:', error);
+            }
+        } else {
+            console.error('Logged-in user not found in account data');
+        }
+    }
+
+    newDiagnosisButton.addEventListener("click", sendSymptoms);
 });
