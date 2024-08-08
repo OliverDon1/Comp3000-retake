@@ -6,10 +6,18 @@ const { Accounts } = require('./accountSchema.js');
 const http = require('http');
 const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+app.use(session({
+    secret: 'your-secret-key', // Change this to a random string
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 let loggedInUsers = {};
 const staticDir = path.join(__dirname);
@@ -72,6 +80,7 @@ app.post('/submitSymptoms', async (req, res) => {
 app.post('/loginSuccess', (req, res) => {
     const { username } = req.body;
     if (username) {
+        req.session.username = username;
         loggedInUsers[username] = true;
         io.emit('userLoggedIn', { username: username });
         res.status(200).json({ message: 'Username received successfully' });
@@ -80,8 +89,34 @@ app.post('/loginSuccess', (req, res) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    if (req.session.username) {
+        delete loggedInUsers[req.session.username];
+        req.session.destroy(err => {
+            if (err) {
+                return res.status(500).json({ error: 'Failed to logout' });
+            }
+            res.status(200).json({ message: 'Logged out successfully' });
+        });
+    } else {
+        res.status(400).json({ error: 'No user to logout' });
+    }
+});
+
 app.get('/loggedInUsers', (req, res) => {
     res.json(Object.keys(loggedInUsers));
+});
+
+function requireLogin(req, res, next) {
+    if (req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+}
+
+app.get('/protectedPage', requireLogin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'protectedPage.html'));
 });
 
 io.on('connection', (socket) => {

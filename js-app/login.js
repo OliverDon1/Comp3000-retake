@@ -25,22 +25,35 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function changePageLogin(){
         await getAccounts();
+        let imessage = document.getElementById("incorrectMessage");
+        imessage.style.visibility = "hidden";
         for(let x = 0; x < accountData.length; x++){
             if(userNameBox.value == accountData[x].username){
                 if(passwordBox.value == accountData[x].password){
                     try {
-                        await fetch('/loginSuccess', {
+                        const response = await fetch('/loginSuccess', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({ username: accountData[x].username })
                         });
+                        if (response.ok) {
+                            sessionStorage.setItem('username', accountData[x].username);
+                            window.location.href = "/mainPage.html";
+                        } else {
+                            throw new Error('Login failed');
+                        }
                     } catch (error) {
                         console.error('Error sending username to server:', error);
                     }
-                    window.location.href = "/mainPage.html";
                 }
+                else{
+                    imessage.style.visibility = "visible";
+                }
+            }
+            else{
+                imessage.style.visibility = "visible";
             }
         }
     }

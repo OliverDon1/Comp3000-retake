@@ -1,4 +1,24 @@
 document.addEventListener("DOMContentLoaded", async function () {
+    async function checkSession() {
+        try {
+            const response = await fetch('/loggedInUsers');
+            if (response.ok) {
+                const loggedInUsers = await response.json();
+                const username = sessionStorage.getItem('username');
+                if (!loggedInUsers.includes(username)) {
+                    window.location.href = "/login.html";
+                }
+            } else {
+                throw new Error('Failed to check session');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            window.location.href = "/login.html";
+        }
+    }
+
+    checkSession();
+
     let container = document.getElementById("newDiagnosis");
     let newDiagnosisButton = document.getElementById("Calculate");
     let chosenDiagnosis = document.getElementById("cDiagnosis");

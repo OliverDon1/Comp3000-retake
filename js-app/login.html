@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
 <meta charset="UTF-8">
-<title>Login</title>
+<title>Login Page</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="login.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
-<script src="/socket.io/socket.io.js"></script>
-<style>
-</style>
+</head>
 <body>
 <div class="loginBox">
     <h1>Login</h1>
     <input type="text" id="usernameBox" placeholder="Username">
-    <input type="text" id="passwordBox" placeholder="Password">
-    <h2 id="forgotPassword">Forgot Password</h2>
-    <h3 id="createAccount">Create Account</h3>
-    <button id="loginButton">Login</button>
+    <input type="password" id="passwordBox" placeholder="Password">
+    <button class="loginButton" id="loginButton">Login</button>
+    <div id ="incorrectMessage">Username or Password is incorrect</div>
+    <h2 id="createAccount">Create Account</h2>
+    <h3 id="forgotPassword">Forgot Password</h3>
 </div>
-<script type = "module" src="login.js"></script>
+<script src="login.js"></script>
 </body>
-</html> 
+</html>

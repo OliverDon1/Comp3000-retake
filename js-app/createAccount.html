@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
 <meta charset="UTF-8">
-<title>Page Title</title>
+<title>Create Account</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="">
+<link rel="stylesheet" href="createAccount.css">
 <script src="/socket.io/socket.io.js"></script>
-<style>
-</style>
+</head>
 <body>
 <div class="createAccount">
     <h1>Create Account</h1>
-    <input type="text" id ="inputUsername" placeholder="Username">
-    <input type="text" id ="inputPassword" placeholder="Password">
+    <input type="text" id="inputUsername" placeholder="Username">
+    <input type="text" id="inputPassword" placeholder="Password">
     <h1>Please select your first security question</h1>
     <select id="securityQuestion1">
         <option value="q1q0"></option>
@@ -25,10 +25,10 @@
         <option value="q1q8">Where did you meet your spouse?</option>
         <option value="q1q9">What year was your father (or mother) born?</option>
     </select>
-    <input type="text" id ="inputsAnswer" placeholder="Question Answer">
+    <input type="text" id="inputsAnswer" placeholder="Question Answer">
     <button id="Confirm">Sign Up</button>
-    <button id ="Back">Return</button>
+    <button id="Back">Return</button>
 </div>
-<script type ="module" src="createAccount.js"></script>
+<script type="module" src="createAccount.js"></script>
 </body>
 </html>

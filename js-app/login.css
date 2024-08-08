@@ -1,50 +1,71 @@
-
-.loginBox {
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600&display=swap');
+body {
     font-family: "Titillium Web", sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.loginBox {
     border: 3px;
     border-width: 0.3rem;
     border-style: dashed;
     border-color: black;
     border-radius: 25px;
-    margin: 20rem;
-    display: block;
-    border-spacing: 0;
+    padding: 4rem;
     text-align: center;
     box-sizing: border-box;
-    padding: 4rem;
+    background-color: #fff;
     margin-left: 40rem;
     margin-right: 40rem;
 }
-.loginBox h1{
+.loginBox h1 {
     text-align: center;
-    margin: 0%;
+    margin: 0;
 }
-#usernameBox{
+#usernameBox, #passwordBox {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1rem;
     text-align: center;
-    align-items: center;
-    margin: auto;
-    display: block;
 }
-#passwordBox{
-    text-align: center;
-    align-items: center;
-    margin: auto;
-    display: block;
-    margin-top: 0.1%;
-}
-.loginBox h2{
-    
+.loginButton {
+    width: 85%;
+    padding: 15px;
+    margin: 20px auto;
+    font-size: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    margin-top: 0;
-    font-size: 0.7rem;
-    margin-bottom: 0;
 }
-.loginBox h3{
+.loginButton:hover {
+    background-color: #45a049;
+}
+#incorrectMessage{
+    visibility: hidden;
+    background-color: red;
+}
+.createAccount, .forgotPassword {
+    display: block;
+    width: 85%;
+    padding: 10px;
+    margin: 10px auto;
+    font-size: 1rem;
+    color: #4CAF50;
+    text-decoration: none;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
     cursor: pointer;
-    margin-top: 0;
-    font-size: 0.7rem;
-    margin-bottom: 0;
 }
-.loginButton{
-    margin-top: 0;
+.createAccount:hover, .forgotPassword:hover {
+    background-color: #4CAF50;
+    color: white;
 }

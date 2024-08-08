@@ -1,0 +1,52 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+#mainPage {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 2px solid #000; /* Add border */
+    border-radius: 10px; /* Optional: to round the corners */
+    background-color: #fff;
+}
+button {
+    display: block;
+    width: 80%;
+    padding: 15px;
+    font-size: 20px;
+    margin: 20px auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#Logout {
+    background-color: #f44336; /* Red background for logout button */
+    color: white;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#preDiagnosis > div:first-child {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 30px;
+}
+
+.symptom {
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: normal;
+}

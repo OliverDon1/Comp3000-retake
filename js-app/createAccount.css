@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600&display=swap');
+body {
+    font-family: "Titillium Web", sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.createAccount {
+    border: 3px;
+    border-width: 0.3rem;
+    border-style: dashed;
+    border-color: black;
+    border-radius: 25px;
+    padding: 4rem;
+    text-align: center;
+    box-sizing: border-box;
+    background-color: #fff;
+    margin-left: 40rem;
+    margin-right: 40rem;
+    width: 80%;
+    max-width: 600px;
+}
+.createAccount h1 {
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+.createAccount input, .createAccount select {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1rem;
+    text-align: center;
+}
+.createAccount button {
+    width: 85%;
+    padding: 15px;
+    margin: 20px auto;
+    font-size: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.createAccount button:hover {
+    background-color: #45a049;
+}
+#createAccount #Back {
+    background-color: #f44336;
+}
+#createAccount #Back:hover {
+    background-color: #e53935;
+}
